@@ -13,7 +13,7 @@ import os
 
 #==========================================Setting gdal library path=====================================================
 GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', r'C:\Users\alber\Envs\codedreamer\Lib\site-packages\osgeo\gdal305.dll') 
-
+os.environ['GEOS_LIBRARY_PATH'] = r'C:\OSGeo4W\bin'
 
 from pathlib import Path
 
@@ -42,10 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
+    'rest_framework',
+    'leaflet',
     'sol',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +58,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+#=====================================Enabling CORS====================================
+CORS_ALLOW_ALL_ORIGINS = True
+
+#----------------------------------------------
 
 ROOT_URLCONF = 'TeaFarmGIS.urls'
 
@@ -131,3 +140,43 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#==========================CUSTOMIZING BACKEND MAPS WITH LEAFLET===================================
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (-0.1, 35.3),
+    'DEFAULT_ZOOM': 10,
+    'MIN_ZOOM': 3,
+    'MAX_ZOOM': 20,
+    'SCALE': 'both',
+    'ATTRIBUTION_PREFIX': 'TeaFarmGIS',
+    'TILES': [
+        # OpenStreetMap
+        ('OpenStreetMap',
+         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+         {'attribution': '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'}),
+
+        # Google Streets (note: unofficial, usage not guaranteed by Google)
+        ('Google Streets',
+         'http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+         {
+             'attribution': '&copy; <a href="https://maps.google.com">Google</a>',
+             'subdomains': ['mt0', 'mt1', 'mt2', 'mt3']
+         }),
+
+        # Google Satellite
+        ('Google Satellite',
+         'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+         {
+             'attribution': '&copy; <a href="https://maps.google.com">Google</a>',
+             'subdomains': ['mt0', 'mt1', 'mt2', 'mt3']
+         }),
+
+        # Google Hybrid (satellite + labels)
+        ('Google Hybrid',
+         'http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+         {
+             'attribution': '&copy; <a href="https://maps.google.com">Google</a>',
+             'subdomains': ['mt0', 'mt1', 'mt2', 'mt3']
+         }),
+    ]
+}
