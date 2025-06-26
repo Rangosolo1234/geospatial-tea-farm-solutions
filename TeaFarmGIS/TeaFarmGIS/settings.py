@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'rest_framework',
     'rest_framework_gis',
+    'rest_framework_simplejwt',
+    'corsheaders',
     'leaflet',
     'sol',
 ]
@@ -61,8 +63,19 @@ MIDDLEWARE = [
 ]
 
 #=====================================Enabling CORS====================================
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vue dev server
+    "http://127.0.0.1:5173",
+]
 
+
+#=====================================JWT authentication===================================
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 #----------------------------------------------
 
 ROOT_URLCONF = 'TeaFarmGIS.urls'
