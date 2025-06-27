@@ -99,7 +99,6 @@ WSGI_APPLICATION = 'TeaFarmGIS.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -169,7 +168,7 @@ LEAFLET_CONFIG = {
          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
          {'attribution': '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'}),
 
-        # Google Streets (note: unofficial, usage not guaranteed by Google)
+        # Google Streets
         ('Google Streets',
          'http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
          {
