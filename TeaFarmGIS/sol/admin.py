@@ -21,7 +21,7 @@ class FarmerAdmin(admin.ModelAdmin):
 
 @admin.register(Farm)
 class FarmAdmin(LeafletGeoAdmin):
-    list_display = ('name', 'farmer')
+    list_display = ('id', 'name', 'farmer', 'boundary')
 
 @admin.register(DailyTeaDelivery)
 class DailyTeaDeliveryAdmin(admin.ModelAdmin):

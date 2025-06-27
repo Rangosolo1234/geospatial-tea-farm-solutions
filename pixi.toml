@@ -1,0 +1,11 @@
+[workspace]
+authors = ["rangosolo1234 <kipkirui.solomon864@gmail.com>"]
+channels = ["conda-forge"]
+name = "geospatial-tea-farm-solutions"
+platforms = ["win-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+gdal = ">=3.11.0,<4"

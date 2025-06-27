@@ -6,14 +6,20 @@ from django.contrib.auth.models import User #Importing User that comes by defaul
 # Create your models here.
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100, default='Unknown')
+    last_name = models.CharField(max_length=100, default='Unknown')
     phone = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.first_name
 
 class Farm(models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     boundary = models.PolygonField()
+
+    def __str__(self):
+        return self.name
 
 class DailyTeaDelivery(models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
