@@ -11,8 +11,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
+import api from '@/axios'
 
 const username = ref('')
 const password = ref('')
@@ -20,15 +20,31 @@ const router = useRouter()
 
 const login = async () => {
   try {
-    const res = await axios.post('http://localhost:8000/api/token/', {
+    const res = await api.post('token/', {
       username: username.value,
       password: password.value,
     })
+
+    // Save token
     localStorage.setItem('token', res.data.access)
-    axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`
-    router.push('/')
+
+    // 👇 Immediately apply token to future requests (runtime)
+    api.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`
+
+    // Navigate to dashboard or wherever you want
+    router.push('/dashboard')
   } catch (err) {
-    alert('Login failed')
+    console.error('Login error:', err)
+    alert('Login failed. Please check your credentials.')
   }
 }
 </script>
+
+<style scoped>
+.input {
+  @apply block w-full border border-gray-300 rounded px-4 py-2 mb-4;
+}
+.btn-green {
+  @apply bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full;
+}
+</style>
