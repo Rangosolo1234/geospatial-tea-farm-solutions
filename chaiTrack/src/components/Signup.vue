@@ -1,73 +1,41 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <form @submit.prevent="signup" class="bg-white p-8 rounded shadow-md w-full max-w-sm">
-      <h2 class="text-2xl font-bold mb-6 text-green-700">Sign Up</h2>
-
-      <input v-model="username" type="text" placeholder="Username" class="input" required />
-      <input v-model="email" type="email" placeholder="Email" class="input" required />
-      <input v-model="password" type="password" placeholder="Password" class="input" required />
-
-      <button type="submit" class="btn-green">Create Account</button>
+  <div class="p-4">
+    <h2 class="text-xl mb-4">Sign Up</h2>
+    <form @submit.prevent="signup">
+      <input v-model="username" type="text" placeholder="Username" class="border p-2 mb-2 w-full" />
+      <input v-model="email" type="email" placeholder="Email" class="border p-2 mb-2 w-full" />
+      <input v-model="password" type="password" placeholder="Password" class="border p-2 mb-2 w-full" />
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2">Sign Up</button>
     </form>
+    <p v-if="message" class="text-green-600 mt-2">{{ message }}</p>
+    <p v-if="error" class="text-red-600 mt-2">{{ error }}</p>
   </div>
 </template>
 
-<!-- <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
-
-const username = ref('')
-const email = ref('')
-const password = ref('')
-
-const signup = async () => {
-  try {
-    await axios.post('/api/users/', {
-      username: username.value,
-      email: email.value,
-      password: password.value,
-    })
-    alert('Signup successful! Now login.')
-  } catch (error) {
-    console.error(error)
-    alert('Signup failed')
-  }
-}
-</script> -->
-
-
-<!-- ######################################################################################### -->
 <script setup>
 import { ref } from 'vue'
-import api from '@/axios' // ✅ import the custom axios instance
+import api from '../services/axios'
+import { useRouter } from 'vue-router'
 
 const username = ref('')
 const email = ref('')
 const password = ref('')
+const message = ref(null)
+const error = ref(null)
+const router = useRouter()
 
 const signup = async () => {
   try {
-    await api.post('users/', {
+    await api.post('register/', {
       username: username.value,
       email: email.value,
-      password: password.value,
+      password: password.value
     })
-    alert('Signup successful! Now login.')
-  } catch (error) {
-    console.error(error)
-    alert('Signup failed')
+    message.value = 'Account created! Redirecting to login...'
+    setTimeout(() => router.push('/login'), 2000)
+  } catch (err) {
+    error.value = 'Signup failed. Username might be taken.'
+    console.error(err)
   }
 }
 </script>
-
-
-<!-- ######################################################################## -->
-
-<style scoped>
-.input {
-  @apply mb-4 w-full px-4 py-2 border rounded;
-}
-.btn-green {
-  @apply w-full bg-green-600 text-white py-2 rounded hover:bg-green-700;
-}
-</style>
