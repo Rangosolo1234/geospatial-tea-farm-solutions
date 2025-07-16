@@ -1,131 +1,161 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl mb-4 font-bold text-green-700">Manage Farm Expenses</h1>
+  <div class="p-6 bg-white rounded shadow space-y-6">
+    <h2 class="text-2xl font-semibold text-green-700">💸 Expense Dashboard</h2>
 
-    <!-- Add Expense Form -->
-    <form @submit.prevent="addExpense" class="bg-white shadow p-4 rounded mb-6 max-w-md">
-      <label class="block mb-2">Select Farm</label>
-      <select v-model="farm" class="input" required>
-        <option disabled value="">-- Choose a Farm --</option>
-        <option
-          v-for="f in farms"
-          :key="f.properties.id"
-          :value="f.properties.id"
-        >
-          {{ f.properties.name }}
-        </option>
-      </select>
+    <!-- Filters -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+      <div>
+        <label class="block font-medium">Farmer</label>
+        <select v-model="selectedFarmer" @change="onFarmerChange" class="w-full p-2 border rounded">
+          <option value="">-- All Farmers --</option>
+          <option v-for="f in farmers" :key="f.id" :value="f.id">{{ f.username }}</option>
+        </select>
+      </div>
 
-      <label class="block mt-4 mb-2">Date</label>
-      <input v-model="date" type="date" class="input" required />
+      <div>
+        <label class="block font-medium">Farm</label>
+        <select v-model="selectedFarm" @change="loadExpenses" class="w-full p-2 border rounded">
+          <option value="">-- All Farms --</option>
+          <option v-for="farm in farms" :key="farm.id" :value="farm.id">{{ farm.name }}</option>
+        </select>
+      </div>
 
-      <label class="block mt-4 mb-2">Expense Type</label>
-      <input v-model="type" type="text" placeholder="e.g. Fertilizer" class="input" required />
-
-      <label class="block mt-4 mb-2">Amount (KES)</label>
-      <input v-model="amount" type="number" step="0.01" class="input" required />
-
-      <button class="btn-green mt-4">Add Expense</button>
-    </form>
-
-    <!-- Expense Table -->
-    <div class="overflow-x-auto">
-      <table class="table-auto w-full bg-white shadow rounded">
-        <thead class="bg-green-700 text-white">
-          <tr>
-            <th class="px-4 py-2 text-left">Farm</th>
-            <th class="px-4 py-2">Date</th>
-            <th class="px-4 py-2">Type</th>
-            <th class="px-4 py-2">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="e in expenses" :key="e.id" class="border-t">
-            <td class="px-4 py-2">{{ getFarmName(e.farm) }}</td>
-            <td class="px-4 py-2">{{ e.date }}</td>
-            <td class="px-4 py-2">{{ e.expense_type }}</td>
-            <td class="px-4 py-2">{{ e.amount }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div>
+        <label class="block font-medium">View By</label>
+        <select v-model="groupBy" @change="updateChart" class="w-full p-2 border rounded">
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
     </div>
+
+    <!-- Chart -->
+    <div class="h-80">
+      <Bar :data="chartData" :options="chartOptions" />
+    </div>
+
+    <!-- Expense List -->
+    <table class="w-full border-collapse border shadow-md">
+      <thead class="bg-green-100">
+        <tr>
+          <th class="p-2 border">ID</th>
+          <th class="p-2 border">Farm</th>
+          <th class="p-2 border">Date</th>
+          <th class="p-2 border">Type</th>
+          <th class="p-2 border">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="exp in expenses" :key="exp.id" class="text-center">
+          <td class="p-2 border">{{ exp.id }}</td>
+          <td class="p-2 border">{{ exp.farm_name }}</td>
+          <td class="p-2 border">{{ exp.date }}</td>
+          <td class="p-2 border">{{ exp.expense_type }}</td>
+          <td class="p-2 border">{{ exp.amount.toFixed(2) }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import api from '@/axios'
+import { ref, onMounted, watch } from 'vue'
+import { Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
+} from 'chart.js'
+import api from '../services/axios'
 
-const router = useRouter()
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
-const farm = ref('')
-const date = ref('')
-const type = ref('')
-const amount = ref('')
-
+const farmers = ref([])
+const farms = ref([])  // farms of selected farmer
 const expenses = ref([])
-const farms = ref([])
 
-// Get farm name from ID using GeoJSON properties
-const getFarmName = (farmId) => {
-  const match = farms.value.find(f => f.properties.id === farmId)
-  return match ? match.properties.name : 'Unknown'
+const selectedFarmer = ref('')
+const selectedFarm = ref('')
+const groupBy = ref('weekly')  // or 'monthly'
+
+// Chart data
+const chartData = ref({ labels: [], datasets: [{ label: 'Expense (KSh)', data: [], backgroundColor: '#facc15' }] })
+const chartOptions = ref({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    title: { display: true, text: 'Farm Expenses Overview' }
+  },
+  scales: {
+    y: { beginAtZero: true, title: { display: true, text: 'Amount (KSh)' } },
+    x: { title: { display: true, text: groupBy.value === 'weekly' ? 'Week' : 'Month' } }
+  }
+})
+
+// Load farmers list
+async function loadFarmers() {
+  const res = await api.get('farmers/')
+  farmers.value = res.data
 }
 
-const fetchData = async () => {
-  try {
-    const [farmsRes, expensesRes] = await Promise.all([
-      api.get('farms/'),
-      api.get('expenses/')
-    ])
+// Load farms when farmer changes
+async function onFarmerChange() {
+  selectedFarm.value = ''
+  if (selectedFarmer.value) {
+    const res = await api.get(`farms/?farmer=${selectedFarmer.value}`)
+    farms.value = res.data
+  } else farms.value = []
+  await loadExpenses()
+}
 
-    farms.value = Array.isArray(farmsRes.data)
-      ? farmsRes.data
-      : farmsRes.data.features || farmsRes.data.results || []
+// Load expenses data
+async function loadExpenses() {
+  const params = {}
+  if (selectedFarm.value) params.farm = selectedFarm.value
+  const res = await api.get('expenses/', { params })
+  expenses.value = res.data.map(e => ({
+    ...e,
+    farm_name: farms.value.find(f => f.id === e.farm)?.name || 'All'
+  }))
+  updateChart()
+}
 
-    expenses.value = Array.isArray(expensesRes.data)
-      ? expensesRes.data
-      : expensesRes.data.results || []
-
-  } catch (err) {
-    console.error('Error fetching data:', err)
-    if (err.response?.status === 401) {
-      alert('Session expired. Please log in again.')
-      router.push('/login')
+// Process chart data based on groupBy
+function updateChart() {
+  const grouped = {}
+  expenses.value.forEach(e => {
+    const dt = new Date(e.date)
+    let label
+    if (groupBy.value === 'weekly') {
+      const week = `${dt.getFullYear()}-W${Math.ceil((dt.getDate())/7)}`
+      label = week
+    } else {
+      label = dt.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' })
     }
+    grouped[label] = (grouped[label] || 0) + e.amount
+  })
+
+  const labels = Object.keys(grouped).sort()
+  chartData.value = {
+    labels,
+    datasets: [{ label: 'Expense (KSh)', data: labels.map(l => grouped[l]), backgroundColor: '#facc15' }]
   }
+  chartOptions.value.scales.x.title.text = groupBy.value === 'weekly' ? 'Week' : 'Month'
 }
 
-const addExpense = async () => {
-  try {
-    await api.post('expenses/', {
-      farm: farm.value,
-      date: date.value,
-      expense_type: type.value,
-      amount: amount.value
-    })
+onMounted(async () => {
+  await loadFarmers()
+  await loadExpenses()
+})
 
-    farm.value = ''
-    date.value = ''
-    type.value = ''
-    amount.value = ''
-
-    await fetchData()
-  } catch (err) {
-    console.error('Failed to add expense:', err)
-    alert('Failed to add expense. Ensure you are logged in and fields are valid.')
-  }
-}
-
-onMounted(fetchData)
+watch([selectedFarmer, selectedFarm, groupBy], loadExpenses)
 </script>
 
 <style scoped>
-.input {
-  @apply block w-full border border-gray-300 rounded px-4 py-2 mt-1;
-}
-.btn-green {
-  @apply bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full;
-}
+/* Optional custom styles */
 </style>
