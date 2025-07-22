@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-9t=()4$6!z$q94w6w9n3d!pm_fja!1^t7c%s^@p#7e2q^utc#g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -68,7 +68,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vue dev server
     "http://127.0.0.1:5173",
 ]
-
+CORS_ALLOW_CREDENTIALS = True
 
 #=====================================JWT authentication===================================
 REST_FRAMEWORK = {
