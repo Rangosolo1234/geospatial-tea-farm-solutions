@@ -45,6 +45,7 @@ class FarmViewSet(viewsets.ModelViewSet):
     queryset = Farm.objects.all()
     serializer_class = FarmSerializer
     permission_classes = [IsAuthenticated]
+    search_fields = ['name']
 
 class DailyTeaDeliveryViewSet(viewsets.ModelViewSet):
     queryset = DailyTeaDelivery.objects.all().select_related('farmer')
@@ -74,7 +75,8 @@ class DailyTeaDeliveryViewSet(viewsets.ModelViewSet):
 class ExpenseViewSet(viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
-    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['farm']
 
 class TeaCollectionCenterViewSet(viewsets.ModelViewSet):
     queryset = TeaCollectionCenter.objects.all()
