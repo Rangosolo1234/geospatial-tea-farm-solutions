@@ -2,3 +2,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+:root {
+  --green-primary: #4CAF50;
+  --brown-earth: #8B5E3C;
+  --yellow-sun: #FFD54F;
+  --blue-water: #2196F3;
+  --red-accent: #E53935;
+}
+
+body {
+  background: linear-gradient(
+    135deg,
+    rgba(76, 175, 80, 0.85),
+    rgba(139, 94, 60, 0.85),
+    rgba(255, 213, 79, 0.85)
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 0.75rem;
+  width: 100%;
+  color: #fff;
+}
+
+.button-green {
+  background-color: var(--green-primary);
+  color: white;
+}
+.button-yellow {
+  background-color: var(--yellow-sun);
+  color: #333;
+}
+.button-blue {
+  background-color: var(--blue-water);
+  color: white;
+}
+.button-red {
+  background-color: var(--red-accent);
+  color: white;
+}
+.button-green:hover,
+.button-yellow:hover,
+.button-blue:hover,
+.button-red:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
