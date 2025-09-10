@@ -100,7 +100,3 @@ onMounted(async () => {
   peakDay.value = dates[maxIndex]
 })
 </script>
-
-<style scoped>
-/* Optional: You can add custom styles here */
-</style>
