@@ -13,3 +13,42 @@ requirements.txt
 sol/migrations/
 
 !sol/migrations/__init__.py
+
+
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django migrations (ignore all but keep __init__.py)
+*/migrations/*
+!*/migrations/__init__.py
+
+# Environment variables
+.env
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Logs
+*.log
+
+
+.vscode/
+.idea/
+*.swp
+
+# Node.js dependencies (for chaiTrack)
+node_modules/
+
+
+dist/
+build/
+public/
+
+
+Dockerfile
+docker-compose.yml
