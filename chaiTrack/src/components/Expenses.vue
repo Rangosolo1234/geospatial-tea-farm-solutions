@@ -65,10 +65,10 @@
       <tbody>
         <tr v-for="exp in filteredExpenses" :key="exp.id">
           <td class="px-2 py-1 border">{{ exp.id }}</td>
-          <td class="px-2 py-1 border">{{ exp.farmer }}</td>
-          <td class="px-2 py-1 border">{{ exp.farm }}</td>
+          <td class="px-2 py-1 border">{{ exp.farmer.first_name}}</td>
+          <td class="px-2 py-1 border">{{ exp.farm_name }}</td>
           <td class="px-2 py-1 border">{{ exp.date }}</td>
-          <td class="px-2 py-1 border">{{ exp.type }}</td>
+          <td class="px-2 py-1 border">{{ exp.expense_type }}</td>
           <td class="px-2 py-1 border">{{ exp.amount.toLocaleString() }}</td>
         </tr>
       </tbody>
@@ -91,6 +91,7 @@ const fetchExpenses = async () => {
   try {
     const res = await fetch('http://127.0.0.1:8000/api/expenses/');
     const data = await res.json();
+    console.log(data); 
     expenses.value = data;
     filterByFarmer();
   } catch (err) {
@@ -103,7 +104,11 @@ const filterByFarmer = () => {
   if (!selectedFarmer.value) {
     filteredExpenses.value = expenses.value;
   } else {
-    filteredExpenses.value = expenses.value.filter(e => e.farmer === selectedFarmer.value);
+    filteredExpenses.value = expenses.value.filter(e => {
+      // Handle both direct farmer string and nested farmer object
+      const farmer = e.farmer?.first_name || e.farmer;
+      return farmer === selectedFarmer.value;
+    });
   }
 };
 
@@ -115,7 +120,12 @@ const filterByFarm = () => {
   }
 };
 
-const uniqueFarmers = computed(() => [...new Set(expenses.value.map(e => e.farmer))]);
+const uniqueFarmers = computed(() => {
+  return [...new Set(expenses.value.map(e => {
+    // Handle both direct farmer string and nested farmer object
+    return e.farmer?.first_name || e.farmer;
+  }))].filter(Boolean); // Remove null/undefined
+});
 const uniqueFarmsForSelectedFarmer = computed(() => {
   return [...new Set(expenses.value.filter(e => e.farmer === selectedFarmer.value).map(e => e.farm))];
 });
