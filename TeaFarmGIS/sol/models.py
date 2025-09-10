@@ -20,6 +20,8 @@ class Farm(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        verbose_name_plural = "Farm"
 
 class DailyTeaDelivery(models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
@@ -30,16 +32,16 @@ class DailyTeaDelivery(models.Model):
 class Expense(models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
     date = models.DateField()
-    expense_type = models.CharField(max_length=50)  # fertilizer, weeding
+    expense_type = models.CharField(max_length=50)
     amount = models.FloatField()
-
+   
 class TeaCollectionCenter(models.Model):
     name = models.CharField(max_length=100)
     location = models.PointField()
 
 class TruckLocation(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
-    location = models.PointField()
+    location = models.PointField() 
     tea_center = models.ForeignKey(TeaCollectionCenter, on_delete=models.CASCADE)
 
 class WeatherData(models.Model):
