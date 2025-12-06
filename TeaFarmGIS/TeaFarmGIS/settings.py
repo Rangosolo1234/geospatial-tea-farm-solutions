@@ -11,10 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os 
 
-#==========================================Setting gdal library path=====================================================
-GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', r'C:\Users\alber\Envs\codedreamer\Lib\site-packages\osgeo\gdal305.dll') 
-os.environ['GEOS_LIBRARY_PATH'] = r'C:\OSGeo4W\bin'
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
