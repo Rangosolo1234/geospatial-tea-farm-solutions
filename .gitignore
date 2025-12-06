@@ -8,8 +8,6 @@
 Dockerfile
 docker-compose.yml
 
-requirements.txt
-
 sol/migrations/
 
 !sol/migrations/__init__.py
