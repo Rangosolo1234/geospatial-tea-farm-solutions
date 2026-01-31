@@ -2,5 +2,46 @@
 # pixi environments
 .pixi
 *.egg-info
+
 .env
+
+Dockerfile
+docker-compose.yml
+
+sol/migrations/
+
+!sol/migrations/__init__.py
+
+
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django migrations (ignore all but keep __init__.py)
+*/migrations/*
+!*/migrations/__init__.py
+**/migrations/
+
+# Environment variables
+.env
+
+# Virtual environments
+.venv/
+env/
 venv/
+
+# Logs
+*.log
+
+
+.vscode/
+.idea/
+*.swp
+
+
+
+
+Dockerfile
+docker-compose.yml
