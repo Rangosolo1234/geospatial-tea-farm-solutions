@@ -31,14 +31,44 @@ class FarmSerializer(GeoFeatureModelSerializer):
         fields = ('id', 'name', 'farmer', 'boundary')
 
 class DailyTeaDeliverySerializer(serializers.ModelSerializer):
+    farmer_details = FarmerSerializer(source='farmer', read_only=True)
+    
     class Meta:
         model = DailyTeaDelivery
-        fields = '__all__'
+        fields = [
+            'id', 
+            'farmer', 
+            'farmer_details',
+            'date', 
+            'quantity_kg', 
+            'plucking_labour_cost'
+        ]
+        extra_kwargs = {
+            'farmer': {'write_only': True}
+        }
+
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    farm_name = serializers.CharField(source='farm.name', read_only=True)
+    farmer = FarmerSerializer(source='farm.farmer', read_only=True)
+    
     class Meta:
         model = Expense
-        fields = '__all__'
+        fields = [
+            'id',
+            'farm', 
+            'farm_name',
+            'farmer',  # full farmer object
+            'date', 
+            'expense_type', 
+            'amount'
+        ]
+
+# class ExpenseSerializer(serializers.ModelSerializer):
+#     # farm_name = serializers.CharField(source='farm.name', read_only=True)
+#     class Meta:
+#         model = Expense
+#         fields = '__all__'
 
 class TeaCollectionCenterSerializer(GeoFeatureModelSerializer):
     class Meta:

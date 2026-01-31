@@ -1,8 +1,7 @@
 from django.db import models
-from django.contrib.gis.db import models  #For geospatial model fields and geometries
+from django.contrib.gis.db import models as gis_models
 
-from django.contrib.auth.models import User #Importing User that comes by default when app is initialized
-
+from django.contrib.auth.models import User
 # Create your models here.
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -13,13 +12,15 @@ class Farmer(models.Model):
     def __str__(self):
         return self.first_name
 
-class Farm(models.Model):
+class Farm(gis_models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    boundary = models.PolygonField()
+    boundary = gis_models.PolygonField()
 
     def __str__(self):
         return self.name
+    class Meta:
+        verbose_name_plural = "Farm"
 
 class DailyTeaDelivery(models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
@@ -30,25 +31,25 @@ class DailyTeaDelivery(models.Model):
 class Expense(models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
     date = models.DateField()
-    expense_type = models.CharField(max_length=50)  # fertilizer, weeding
+    expense_type = models.CharField(max_length=50)
     amount = models.FloatField()
-
-class TeaCollectionCenter(models.Model):
+   
+class TeaCollectionCenter(gis_models.Model):
     name = models.CharField(max_length=100)
-    location = models.PointField()
+    location = gis_models.PointField()
 
-class TruckLocation(models.Model):
+class TruckLocation(gis_models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
-    location = models.PointField()
+    location = gis_models.PointField() 
     tea_center = models.ForeignKey(TeaCollectionCenter, on_delete=models.CASCADE)
 
-class WeatherData(models.Model):
-    location = models.PointField()
+class WeatherData(gis_models.Model):
+    location = gis_models.PointField()
     timestamp = models.DateTimeField()
     temperature = models.FloatField()
     rainfall = models.FloatField()
 
-class SoilData(models.Model):
+class SoilData(gis_models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
     ph = models.FloatField()
     moisture = models.FloatField()
