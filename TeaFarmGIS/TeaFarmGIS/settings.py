@@ -12,16 +12,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os 
 
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9t=()4$6!z$q94w6w9n3d!pm_fja!1^t7c%s^@p#7e2q^utc#g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -98,15 +97,14 @@ WSGI_APPLICATION = 'TeaFarmGIS.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'taifaorbit',
-        'USER': 'postgres',
-        'PASSWORD': '6479Abcd4489-',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': os.getenv('DB_ENGINE', 'django.contrib.gis.db.backends.postgis'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5433'),
     }
 }
-
 
 
 # Password validation
