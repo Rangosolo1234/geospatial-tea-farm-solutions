@@ -20,9 +20,7 @@ __pycache__/
 *.pyd
 
 # Django migrations (ignore all but keep __init__.py)
-*/migrations/*
 !*/migrations/__init__.py
-**/migrations/
 
 # Environment variables
 .env
