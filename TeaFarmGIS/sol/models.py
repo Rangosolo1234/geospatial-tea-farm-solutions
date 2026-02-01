@@ -22,13 +22,13 @@ class Farm(gis_models.Model):
     class Meta:
         verbose_name_plural = "Farm"
 
-class DailyTeaDelivery(models.Model):
+class DailyTeaDelivery(gis_models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     date = models.DateField()
     quantity_kg = models.FloatField()
     plucking_labour_cost = models.FloatField()
 
-class Expense(models.Model):
+class Expense(gis_models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
     date = models.DateField()
     expense_type = models.CharField(max_length=50)
@@ -48,6 +48,7 @@ class WeatherData(gis_models.Model):
     timestamp = models.DateTimeField()
     temperature = models.FloatField()
     rainfall = models.FloatField()
+    data = models.DateTimeField(auto_now_add = True)
 
 class SoilData(gis_models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
