@@ -16,7 +16,6 @@ class Farm(gis_models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     boundary = gis_models.PolygonField()
-
     def __str__(self):
         return self.name
     class Meta:

@@ -24,16 +24,11 @@ def register_user(request):
     return Response({'message': 'User created successfully'}, status=201)
 
 
-
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-
-
-    
-#======================Creating viewsets==================================
+  
 class FarmerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Farmer.objects.all()
     serializer_class = FarmerSerializer
